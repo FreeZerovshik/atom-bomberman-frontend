@@ -1,18 +1,8 @@
 package com.game.service;
 
-import model.Connection;
-import model.GameSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by sergey on 3/14/17.
@@ -20,24 +10,27 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class MatchMakerImp implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(MatchMakerImp.class);
+    private ConnectionProducer conn = new ConnectionProducer();
 
 
-    @Autowired
-    private ConnectionQueue connectionQueue;
+//    @Autowired
+//    private ConnectionQueue connectionQueue;
 
-    @Autowired
-    private GameRepository gameRepository;
+//    @Autowired
+//    private GameRepository gameRepository;
 
 
-   @PostConstruct
-    public void startThread() {
-        new Thread(this, "match-maker").start();
-        log.info(">>>Start thread in matchmaker");
+//   @PostConstruct
+    public Long startThread(String gameName) {
+        new Thread(this, gameName).start();
+        log.info(">>> Start thread in matchmaker " + gameName);
+        return conn.getSessionId();
     }
 
     @Override
     public void run() {
-        log.info(">>> MatchMaker Started");
+        conn.setSessionId();
+        log.info(">>> MatchMaker Started: " + conn.getSessionId());
 //        List<Connection> candidates = new ArrayList<>(GameSession.PLAYERS_IN_GAME);
 //
 //        while (!Thread.currentThread().isInterrupted()) {
