@@ -1,7 +1,9 @@
 package com.game.service;
 
+import model.GameSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia.GangliaMetricsExportAutoConfiguration;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,10 +12,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class MatchMakerImp implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(MatchMakerImp.class);
-    private ConnectionProducer conn = new ConnectionProducer();
+    private GameSession gameSession = new GameSession();
 
 
 //    @Autowired
+
 //    private ConnectionQueue connectionQueue;
 
 //    @Autowired
@@ -24,13 +27,19 @@ public class MatchMakerImp implements Runnable {
     public Long startThread(String gameName) {
         new Thread(this, gameName).start();
         log.info(">>> Start thread in matchmaker " + gameName);
-        return conn.getSessionId();
+        return gameSession.getId();
     }
 
     @Override
     public void run() {
-        conn.setSessionId();
-        log.info(">>> MatchMaker Started: " + conn.getSessionId());
+        gameSession.setId();
+        log.info(">>> MatchMaker Started: " + gameSession.getId());
+
+        GameRepository repo  = new GameRepository();
+        repo.put(gameSession);
+
+        log.info(">>>> GameSessions:" +  repo.getAll());
+
 //        List<Connection> candidates = new ArrayList<>(GameSession.PLAYERS_IN_GAME);
 //
 //        while (!Thread.currentThread().isInterrupted()) {

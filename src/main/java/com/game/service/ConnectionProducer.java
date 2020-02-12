@@ -10,6 +10,8 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by sergey on 3/14/17.
  */
+
+//TODO Удалить класс
 @Service
 public class ConnectionProducer {
     private static final Logger log = LoggerFactory.getLogger(ConnectionProducer.class);

@@ -9,6 +9,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by sergey on 3/14/17.
  */
+
+//TODO Удалить класс
 @Repository
 public class ConnectionQueue {
     private BlockingQueue<Connection> queue = new LinkedBlockingQueue<>();

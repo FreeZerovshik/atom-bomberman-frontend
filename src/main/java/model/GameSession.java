@@ -14,24 +14,28 @@ public class GameSession {
 
     private static AtomicLong idGenerator = new AtomicLong();
 
-    public static final int PLAYERS_IN_GAME = 4;
+//    public static final int PLAYERS_IN_GAME = 4;
 
-    private final Connection[] connections;
-    private final long id = idGenerator.getAndIncrement();
+//    private final Connection[] connections;
+//    public GameSession(Connection[] connections) {
+//        this.connections = connections;
+//    }
 
-    public GameSession(Connection[] connections) {
-        this.connections = connections;
-    }
+//    @Override
+//    public String toString() {
+//        return "GameSession{" +
+//                "connections=" + Arrays.toString(connections) +
+//                ", id=" + id +
+//                '}';
+//    }
 
-    @Override
-    public String toString() {
-        return "GameSession{" +
-                "connections=" + Arrays.toString(connections) +
-                ", id=" + id +
-                '}';
+
+    public Long setId(){
+        return  idGenerator.getAndIncrement();
     }
 
     public long getId() {
-        return id;
+        return idGenerator.get();
     }
+
 }

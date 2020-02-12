@@ -3,6 +3,8 @@ package model;
 /**
  * Created by sergey on 3/14/17.
  */
+
+//TODO Delete class
 public class Connection {
     private final long playerId;
     private final String name;
