@@ -33,6 +33,7 @@ MessageBroker.prototype.handleGameOver = function (msg) {
 
 // Реализация оставлена на разработчика сервера
 MessageBroker.prototype.handlePossess = function (msg) {
+    console.log("Handle posses");
     gInputEngine.possessed = parseInt(msg.data);
 };
 

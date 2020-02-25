@@ -1,6 +1,6 @@
 package com.game.event;
 
-import com.game.service.MatchMakerImp;
+import com.game.tick.Ticker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -18,6 +18,13 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
        log.info("Socket Connected: " + session);
+       String tst_msg = "{\"id\":1,\"type\":\"Wood\",\"position\":{\"y\":20,\"x\":10}}";
+
+        String posses = "{\"topic\":\"posses\", \"data\": 123}";
+
+       // (new Ticker()).gameLoop(session,tst_msg);
+        session.sendMessage(new TextMessage(posses));
+
     }
 
     @Override

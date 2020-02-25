@@ -1,18 +1,34 @@
-package model;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
+package com.game.model;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by sergey on 3/14/17.
  */
-public class GameSession {
-    private static final Logger log = LoggerFactory.getLogger(GameSession.class);
-
+public class Session {
     private static AtomicLong idGenerator = new AtomicLong();
+    private static String gameName  = new String();
+
+    public Long getAndIncremetSessionId(){
+        return  idGenerator.getAndIncrement();
+    }
+
+    public long getId() {
+        return idGenerator.get();
+    }
+
+    public String getName() {
+        return gameName;
+    }
+
+    public static void setName(String gameName) {
+        Session.gameName = gameName;
+    }
+
+    public void createGameSession(String gameName) {
+        getAndIncremetSessionId();
+        setName(gameName);
+    }
+
 
 //    public static final int PLAYERS_IN_GAME = 4;
 
@@ -28,14 +44,5 @@ public class GameSession {
 //                ", id=" + id +
 //                '}';
 //    }
-
-
-    public Long setId(){
-        return  idGenerator.getAndIncrement();
-    }
-
-    public long getId() {
-        return idGenerator.get();
-    }
 
 }

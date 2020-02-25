@@ -1,8 +1,12 @@
 package com.game.tick;
 
 
+import okhttp3.WebSocket;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +19,7 @@ public class Ticker {
     private Set<Tickable> tickables = new ConcurrentSkipListSet<>();
     private long tickNumber = 0;
 
-    public void gameLoop() {
+    public void gameLoop() throws IOException {
         while (!Thread.currentThread().isInterrupted()) {
             long started = System.currentTimeMillis();
             act(FRAME_TIME);
@@ -23,6 +27,7 @@ public class Ticker {
             if (elapsed < FRAME_TIME) {
                 log.info("All tick finish at {} ms", elapsed);
                 LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(FRAME_TIME - elapsed));
+//                session.sendMessage(new TextMessage(msg));
             } else {
                 log.warn("tick lag {} ms", elapsed - FRAME_TIME);
             }
