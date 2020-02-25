@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by sergey on 3/14/17.
@@ -17,34 +17,47 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 @Service
-public class MatchMakerService {
+public class MatchMakerService  implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(MatchMakerService.class);
 
     @Autowired
-    private GameService service;
-//    private GameSession session;
+    private GameRepository repo;
 
-    private  ConcurrentHashMap<Long, Session> gamesQueue = new ConcurrentHashMap<>();  // очередь из игр
-
-    private  ConcurrentHashMap<Long, Player> playerQueue = new ConcurrentHashMap<>();  // очередь из игроков
+    private AtomicLong playerId = new AtomicLong();
+    private AtomicLong sessionId = new AtomicLong();
 
     public Long join(String gameName) {
-        log.info(">>> Create game in matchmaker " + gameName);
-
-        service.createSession(gameName);
-
-        service.put(service.session);
-        service.put(service.player);
-//        service.start(service.getGameId());
-        //service.connect(service.getGameName(),service.getGameId());
-
-        log.info("<<< Session id " + service.session.getId());
-        log.info("<<< Player id " + service.player.getId());
-        log.info("<<< Game queue size " + service.gameSize());
-        log.info("<<< Player queue size " + service.playerSize());
-
-        return service.getGameId();
+        new Thread(this, gameName).start();
+        return 1L;
     }
 
 
+    @Override
+    public void run() {
+
+        String gameName = Thread.currentThread().getName();
+
+        log.info(">>> Create game in matchmaker " + gameName + " repo=" + repo );
+        log.info(">>>gameQueue " + repo.gamesQueue + " playerQueue=" + repo.playerQueue );
+
+        Session session = new Session(sessionId.getAndIncrement(), gameName);
+        Player player = new Player(playerId.getAndIncrement());
+
+
+        log.info("<<< Session id " + session.getId() + " name=" + session.getName() + " obj=" + session.toString());
+        log.info("<<< Player id " + player.getId() + " name="+ player.getName()+ " obj=" + player.toString());
+
+
+        repo.put(session);
+        repo.put(player);
+//        service.start(service.getGameId());
+        //service.connect(service.getGameName(),service.getGameId());
+
+
+
+        log.info("<<< Game queue size " + repo.gameSize());
+        log.info("<<< Player queue size " + repo.playerSize());
+
+//        return session.getId();
+    }
 }

@@ -19,7 +19,7 @@ public class MatchMakerController {
     @Autowired
     private MatchMakerService ms;
     /**
-     * curl -X POST -i localhost:8090/game/start -d "user=test1"
+     * curl -X POST -i localhost:8090/game/join -d "user=test1"
      */
     @RequestMapping(
             path = "join",

@@ -1,33 +1,37 @@
 package com.game.model;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by sergey on 3/14/17.
  */
-public class Session {
-    private static AtomicLong idGenerator = new AtomicLong();
-    private static String gameName  = new String();
 
-    public Long getAndIncremetSessionId(){
-        return  idGenerator.getAndIncrement();
+public class Session {
+    private  Long idGenerator;
+    private  String Name = new String();
+
+    public Session(Long id, String name) {
+        this.idGenerator = id;
+        this.Name = name;
     }
 
+
     public long getId() {
-        return idGenerator.get();
+        return idGenerator;
     }
 
     public String getName() {
-        return gameName;
+        return Name;
     }
 
-    public static void setName(String gameName) {
-        Session.gameName = gameName;
-    }
+//    public static void setName(String gameName) {
+//        Session.Name = gameName;
+//    }
 
-    public void createGameSession(String gameName) {
-        getAndIncremetSessionId();
-        setName(gameName);
-    }
+//    public void create(String gameName) {
+//        getAndIncremetSessionId();
+//        setName(gameName);
+//    }
 
 
 //    public static final int PLAYERS_IN_GAME = 4;

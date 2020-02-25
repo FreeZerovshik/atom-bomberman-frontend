@@ -1,32 +1,28 @@
 package com.game.model;
+import com.game.util.StringHelper;
+import org.springframework.stereotype.Component;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by sergey on 3/14/17.
  */
-public class Player {
-    private static AtomicLong idGenerator = new AtomicLong();
-    private static String name = new String();
 
-    public Long getAndIncremetSessionId(){
-        return  idGenerator.getAndIncrement();
+public class Player {
+    private Long idGenerator;
+    private  String name = new String();
+
+    public Player(Long id) {
+        this.idGenerator = id;
+        this.name = (new StringHelper()).randomAlphaNumeric(10);
     }
 
     public long getId() {
-        return idGenerator.get();
+        return idGenerator;
     }
 
     public String getName() {
         return name;
-    }
-
-    public static void setName(String gameName) {
-        Player.name = gameName;
-    }
-
-    public void create(String gameName) {
-        getAndIncremetSessionId();
-        setName(gameName);
     }
 
 
