@@ -1,15 +1,11 @@
 package com.game.event;
 
-import com.game.service.GameMechanic;
+import com.game.service.GameSession;
 import com.game.service.GameRepository;
-import com.game.service.MatchMakerService;
-import com.game.tick.Ticker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
@@ -23,13 +19,13 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
     @Autowired
     private GameRepository gameRepository;
     @Autowired
-    private GameMechanic gameMechanic;
+    private GameSession gameSession;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
 
-       log.info("Socket Connected: " + session);
+//       log.info("Socket Connected: " + session);
 //       String tst_msg = "{\"id\":1,\"type\":\"Wood\",\"position\":{\"y\":20,\"x\":10}}";
 
 //        String posses = "{\"topic\":\"posses\", \"data\": 123}";
@@ -41,14 +37,15 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
             log.info("<<< Game queue size " + gameRepository.gameSize());
             log.info("<<< Player queue size " + gameRepository.playerSize());
 
-            gameMechanic.startGameThread("test");
+            gameSession.setSession(session);
+            gameSession.startGameThread("test");
         }
 
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        log.info(">>>>>>>>> handleTextMessage " + message.toString());
+//        log.info(">>>>>>>>> handleTextMessage " + message.toString());
 
         session.sendMessage(new TextMessage("{ \"history\": [ \"ololo\", \"2\" ] }"));
         log.info("Received " + message.toString());

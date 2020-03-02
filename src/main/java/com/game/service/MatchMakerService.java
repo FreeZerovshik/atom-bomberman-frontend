@@ -41,11 +41,6 @@ public class MatchMakerService  {
         gameRepository.put(session);
         gameRepository.put(player);
 
-//        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-//        log.info("<<< Game queue size " + repo.gameSize());
-//        log.info("<<< Player queue size " + repo.playerSize());
-
-
 //        service.start(service.getGameId());
         //service.connect(service.getGameName(),service.getGameId());
         log.info("+++++++++++ Game Repo:"+ gameRepository.toString());
@@ -57,10 +52,4 @@ public class MatchMakerService  {
         return gameRepository;
     }
 
-
-    //    @Override
-//    public void run() {
-//
-
-//    }
 }

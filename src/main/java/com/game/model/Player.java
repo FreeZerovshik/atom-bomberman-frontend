@@ -2,10 +2,10 @@ package com.game.model;
 
 import com.game.message.Message;
 import com.game.message.Topic;
-import com.game.service.GameRepository;
 import com.game.tick.Tickable;
 import com.game.util.StringHelper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import static com.game.util.JsonInterface.*;
 
@@ -17,9 +17,8 @@ import static com.game.util.JsonInterface.*;
 public class Player implements Tickable {
     private Long id;
     private String name;
+    private WebSocketSession session;
 
-//    @Autowired
-//    GameRepository gameRepository;
 
     public Player(Long id) {
         this.id = id;
@@ -37,8 +36,9 @@ public class Player implements Tickable {
     @Override
     public void tick(long elapsed) {
        Topic topic = Topic.POSSESS;
-        Message msg = new Message(topic, toJson(this));
-//        String json = toJson(msg);
+       Message msg = new Message(topic, toJson(this));
+       // session.sendMessage(new TextMessage(toJson(msg)));
+
 
 //        gameRepository.put(msg);
 
@@ -47,7 +47,11 @@ public class Player implements Tickable {
        msg = null;
     }
 
-//    @Override
+    public void setSession(WebSocketSession session) {
+        this.session = session;
+    }
+
+    //    @Override
 //    public String toString() {
 //        return "GameSession{" +
 //                "connections=" + Arrays.toString(connections) +
