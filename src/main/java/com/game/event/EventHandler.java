@@ -16,8 +16,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class EventHandler extends TextWebSocketHandler implements WebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(EventHandler.class);
 
-    @Autowired
-    private GameRepository gameRepository;
+//    @Autowired
+//    private GameRepository gameRepository;
     @Autowired
     private GameSession gameSession;
 
@@ -32,14 +32,16 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
        // (new Ticker()).gameLoop(session,tst_msg);
 //        session.sendMessage(new TextMessage(posses));
 
-        if (gameRepository.playerSize() == GameRepository.PLAYERS_IN_GAME) {
+//        if (gameRepository.playerSize() == GameRepository.PLAYERS_IN_GAME) {
             log.info(">>>> CREATING GAME NOW <<<<<");
-            log.info("<<< Game queue size " + gameRepository.gameSize());
-            log.info("<<< Player queue size " + gameRepository.playerSize());
+//            log.info("<<< Game queue size " + gameRepository.gameSize());
+//            log.info("<<< Player queue size " + gameRepository.playerSize());
 
+//            gameRepository.put(session);
             gameSession.setSession(session);
+//            gameSession.setSession(session);
             gameSession.startGameThread("test");
-        }
+//        }
 
     }
 

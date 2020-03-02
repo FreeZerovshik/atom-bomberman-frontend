@@ -24,6 +24,7 @@ public class GameSession implements Runnable {
     private final ConcurrentHashMap<Long, Message> inputQueue = new ConcurrentHashMap<>();// входящая очередь сообщение
 
     private WebSocketSession session;
+    private Player player;
 
     @Autowired
     private GameRepository gameRepository;
@@ -38,19 +39,17 @@ public class GameSession implements Runnable {
     public void run() {
         log.info(">>> Thread started " + Thread.currentThread().getId());
 
+//        if (gameRepository.playerSize() == GameRepository.PLAYERS_IN_GAME) {
+
 //        GameMechanics gameMechanics= new GameMechanics();
-        Ticker tick = new Ticker(this);
+            Ticker tick = new Ticker(this);
+            this.player  = gameRepository.getPlayer(gameRepository.playerSize()-1);
+            tick.registerTickable(player);
+//            List<Player> players = gameRepository.getPlayersBySize(PLAYERS_IN_GAME);
+//            players.forEach(v -> tick.registerTickable(v));
 
-        List<Player> players = gameRepository.getPlayersBySize(PLAYERS_IN_GAME);
-        players.forEach(v ->
-            {
-//                v.setSession(session);
-                tick.registerTickable(v);
-            }
-        );
-
-        tick.gameLoop();    //start tick
-
+            tick.gameLoop();    //start tick
+//        }
     }
 
     public void put(Message message){this.outputQueue.put(message.getId(),message);}

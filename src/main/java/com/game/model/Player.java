@@ -17,7 +17,7 @@ import static com.game.util.JsonInterface.*;
 public class Player implements Tickable {
     private Long id;
     private String name;
-    private WebSocketSession session;
+//    private WebSocketSession session;
 
 
     public Player(Long id) {
@@ -43,13 +43,13 @@ public class Player implements Tickable {
 //        gameRepository.put(msg);
 
 //
-//       System.out.println(json);
+       System.out.println(toJson(msg));
        msg = null;
     }
 
-    public void setSession(WebSocketSession session) {
-        this.session = session;
-    }
+//    public void setSession(WebSocketSession session) {
+//        this.session = session;
+//    }
 
     //    @Override
 //    public String toString() {

@@ -15,8 +15,8 @@ public class Message {
     private static AtomicLong idGenerator = new AtomicLong();
     private final long id = idGenerator.getAndIncrement();
 
-    @Autowired
-    private EventHandler eventHandler;
+//    @Autowired
+//    private EventHandler eventHandler;
 
     public Message(Topic topic, String data) {
         this.topic = topic;

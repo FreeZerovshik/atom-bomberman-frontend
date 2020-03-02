@@ -38,7 +38,7 @@ public class MatchMakerService  {
         log.info("<<< Session id " + session.getId() + " name=" + session.getName() + " obj=" + session.toString());
         log.info("<<< Player id " + player.getId() + " name="+ player.getName()+ " obj=" + player.toString());
 
-        gameRepository.put(session);
+//        gameRepository.put(session);
         gameRepository.put(player);
 
 //        service.start(service.getGameId());
