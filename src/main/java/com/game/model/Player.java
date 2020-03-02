@@ -1,37 +1,51 @@
 package com.game.model;
-import com.game.util.StringHelper;
-import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicLong;
+import com.game.message.Message;
+import com.game.message.Topic;
+import com.game.service.GameRepository;
+import com.game.tick.Tickable;
+import com.game.util.StringHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import static com.game.util.JsonInterface.*;
+
 
 /**
  * Created by sergey on 3/14/17.
  */
 
-public class Player {
-    private Long idGenerator;
-    private  String name = new String();
+public class Player implements Tickable {
+    private Long id;
+    private String name;
+
+//    @Autowired
+//    GameRepository gameRepository;
 
     public Player(Long id) {
-        this.idGenerator = id;
+        this.id = id;
         this.name = (new StringHelper()).randomAlphaNumeric(10);
     }
 
     public long getId() {
-        return idGenerator;
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
+    @Override
+    public void tick(long elapsed) {
+       Topic topic = Topic.POSSESS;
+        Message msg = new Message(topic, toJson(this));
+//        String json = toJson(msg);
 
-//    public static final int PLAYERS_IN_GAME = 4;
+//        gameRepository.put(msg);
 
-//    private final Connection[] connections;
-//    public GameSession(Connection[] connections) {
-//        this.connections = connections;
-//    }
+//
+//       System.out.println(json);
+       msg = null;
+    }
 
 //    @Override
 //    public String toString() {

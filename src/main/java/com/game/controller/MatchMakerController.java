@@ -17,7 +17,7 @@ public class MatchMakerController {
     private static final Logger log = LoggerFactory.getLogger(MatchMakerController.class);
 
     @Autowired
-    private MatchMakerService ms;
+    private MatchMakerService matchmaker;
     /**
      * curl -X POST -i localhost:8090/game/join -d "user=test1"
      */
@@ -27,6 +27,6 @@ public class MatchMakerController {
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity join(@RequestParam("name") String gameName){
         log.info(">>> Call join with game name : " + gameName);
-        return  ResponseEntity.ok().body(ms.join(gameName));
+        return  ResponseEntity.ok().body(matchmaker.join(gameName));
     }
 }

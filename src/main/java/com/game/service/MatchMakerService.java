@@ -17,47 +17,50 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  */
 @Service
-public class MatchMakerService  implements Runnable {
+public class MatchMakerService  {
     private static final Logger log = LoggerFactory.getLogger(MatchMakerService.class);
 
     @Autowired
-    private GameRepository repo;
+    public GameRepository gameRepository;
 
     private AtomicLong playerId = new AtomicLong();
     private AtomicLong sessionId = new AtomicLong();
 
+
+    //save players and send answer for ws connect
     public Long join(String gameName) {
-        new Thread(this, gameName).start();
-        return 1L;
-    }
 
-
-    @Override
-    public void run() {
-
-        String gameName = Thread.currentThread().getName();
-
-        log.info(">>> Create game in matchmaker " + gameName + " repo=" + repo );
-        log.info(">>>gameQueue " + repo.gamesQueue + " playerQueue=" + repo.playerQueue );
+        log.info(">>> Create game in matchmaker " + gameName + " repo=" + gameRepository);
 
         Session session = new Session(sessionId.getAndIncrement(), gameName);
         Player player = new Player(playerId.getAndIncrement());
 
-
         log.info("<<< Session id " + session.getId() + " name=" + session.getName() + " obj=" + session.toString());
         log.info("<<< Player id " + player.getId() + " name="+ player.getName()+ " obj=" + player.toString());
 
+        gameRepository.put(session);
+        gameRepository.put(player);
 
-        repo.put(session);
-        repo.put(player);
+//        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+//        log.info("<<< Game queue size " + repo.gameSize());
+//        log.info("<<< Player queue size " + repo.playerSize());
+
+
 //        service.start(service.getGameId());
         //service.connect(service.getGameName(),service.getGameId());
+        log.info("+++++++++++ Game Repo:"+ gameRepository.toString());
 
-
-
-        log.info("<<< Game queue size " + repo.gameSize());
-        log.info("<<< Player queue size " + repo.playerSize());
-
-//        return session.getId();
+        return session.getId();
     }
+
+    public GameRepository getGameRepository() {
+        return gameRepository;
+    }
+
+
+    //    @Override
+//    public void run() {
+//
+
+//    }
 }

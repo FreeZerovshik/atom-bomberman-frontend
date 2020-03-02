@@ -24,17 +24,6 @@ public class Session {
         return Name;
     }
 
-//    public static void setName(String gameName) {
-//        Session.Name = gameName;
-//    }
-
-//    public void create(String gameName) {
-//        getAndIncremetSessionId();
-//        setName(gameName);
-//    }
-
-
-//    public static final int PLAYERS_IN_GAME = 4;
 
 //    private final Connection[] connections;
 //    public GameSession(Connection[] connections) {
