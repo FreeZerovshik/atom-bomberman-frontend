@@ -4,9 +4,11 @@ import com.game.controller.MatchMakerController;
 import com.game.message.Message;
 import com.game.message.Topic;
 import com.game.model.Player;
+import com.game.model.Replica;
 import com.game.tick.Ticker;
 import com.game.util.JsonHelper;
 import com.game.util.JsonInterface;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static javafx.scene.input.KeyCode.T;
 
 @Component
 public class GameSession  {
@@ -45,14 +49,24 @@ public class GameSession  {
 
         this.setPlayers(gameRepository.getPlayersBySize(GameRepository.PLAYERS_IN_GAME));
 
-//        List<Long> playersIds = new ArrayList<>();
+        // отправим POSSES всем игрокам в игре
         Message msg;
         for(Player player: players){
             log.info("++++ Player:" + player.getName() + " ["+player.getId() + "]" + " in game:"+ getId());
 //            playersIds.add(player.getId());
             msg = new Message(Topic.POSSESS, JsonInterface.toJson(player.getId()));
-            player.getSession().sendMessage(new TextMessage(JsonInterface.toJson(msg)));
+            WebSocketSession session = player.getSession();
+            session.sendMessage(new TextMessage(JsonInterface.toJson(msg)));
+
+            Boolean res = JsonHelper.isValidJSON(Replica.test_message());
+            log.info(">>> REPLICA validate json:" + res.toString());
+
+            session.sendMessage(new TextMessage(Replica.test_message()));
+
+//          session.sendMessage(new TextMessage(JsonInterface.toJson()));
         }
+
+
 
     }
 
