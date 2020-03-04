@@ -21,14 +21,14 @@ public class Player  {
     private final long id = idGenerator.getAndIncrement();
     private String name;
     // private String name = (new StringHelper()).randomAlphaNumeric(10);
+    private WebSocketSession session;
 
     public Player(String name) {
         this.name = name;
     }
 
-    private WebSocketSession session;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

@@ -42,4 +42,12 @@ public class Message {
 
     }
 
+    @Override
+    public String toString() {
+        return "Message{" +
+                "topic=" + topic +
+                ", data='" + data + '\'' +
+                ", id=" + id +
+                '}';
+    }
 }

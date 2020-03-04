@@ -1,8 +1,9 @@
 package com.game.model;
 
+import javafx.geometry.Pos;
+
 public class Replica {
-    private Long x;
-    private Long y;
+    private Position position;
     private Long id;
     private String type;
     private Boolean gameOver;

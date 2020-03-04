@@ -1,5 +1,6 @@
 package com.game.event;
 
+import com.game.message.Topic;
 import com.game.model.Player;
 import com.game.service.GameRepository;
 import com.game.service.GameSession;
@@ -30,11 +31,15 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 
         log.info("Socket Connected: " + session);
 
-        // инжектив в игрока сессию
+        // инжектим в игрока сессию
         Player player = gameRepository.getPlayerByName(gameRepository.getCurrentPlayerName());
         player.setSession(session);
 
-        log.info(">>>> PLAYER:" + player);
+        gameRepository.startGame();
+
+
+
+
 //       gameRepository.put(session);
 
 
