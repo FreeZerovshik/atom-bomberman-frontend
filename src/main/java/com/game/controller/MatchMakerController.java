@@ -25,8 +25,9 @@ public class MatchMakerController {
             path = "join",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity join(@RequestParam("name") String gameName){
-        log.info(">>> Call join with game name : " + gameName);
-        return  ResponseEntity.ok().body(matchmaker.join(gameName));
+    public ResponseEntity join(@RequestParam("name") String playerName){
+        log.info(">>> To Game join player with name : " + playerName);
+
+        return  ResponseEntity.ok().body(matchmaker.start(playerName));
     }
 }

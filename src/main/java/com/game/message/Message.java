@@ -15,9 +15,6 @@ public class Message {
     private static AtomicLong idGenerator = new AtomicLong();
     private final long id = idGenerator.getAndIncrement();
 
-//    @Autowired
-//    private EventHandler eventHandler;
-
     public Message(Topic topic, String data) {
         this.topic = topic;
         this.data = data;
@@ -40,6 +37,7 @@ public class Message {
     public long getId() {
         return id;
     }
+
     public void sendMessage(WebSocketSession session){
 
     }

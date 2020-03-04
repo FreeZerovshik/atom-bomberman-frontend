@@ -4,8 +4,9 @@ package com.game.tick;
 import com.game.service.GameSession;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashSet;
+import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
@@ -13,8 +14,8 @@ public class Ticker {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Ticker.class);
     private static final int FPS = 60;
     private static final long FRAME_TIME = 1000 / FPS;
-//    private Set<Tickable> tickables = new ConcurrentSkipListSet<>();
-    private Set<Tickable> tickables = new LinkedHashSet<>();
+    private Set<Tickable> tickables = new ConcurrentSkipListSet<>();
+//    private Set<Tickable> tickables = new LinkedHashSet<>();
 
     private long tickNumber = 0;
     private GameSession gameSession;
@@ -51,7 +52,13 @@ public class Ticker {
     }
 
     private void act(long elapsed) {
-        tickables.forEach(tickable -> tickable.tick(elapsed)                            );
+        tickables.forEach(tickable -> {
+            try {
+                tickable.tick(elapsed);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 

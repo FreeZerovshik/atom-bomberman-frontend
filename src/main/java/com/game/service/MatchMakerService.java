@@ -1,12 +1,15 @@
 package com.game.service;
 
-import com.game.model.Session;
 import com.game.model.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
 
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -17,39 +20,53 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  */
 @Service
-public class MatchMakerService  {
+public class MatchMakerService implements Runnable  {
     private static final Logger log = LoggerFactory.getLogger(MatchMakerService.class);
 
+    private final AtomicLong gameId = new AtomicLong(0L);
+    private String playerName;
+
+
     @Autowired
-    public GameRepository gameRepository;
+    private GameRepository gameRepository;
 
-    private AtomicLong playerId = new AtomicLong();
-    private AtomicLong sessionId = new AtomicLong();
+    @Autowired
+    GameSession gameSession;
 
-
-    //save players and send answer for ws connect
-    public Long join(String gameName) {
-
-        log.info(">>> Create game in matchmaker " + gameName + " repo=" + gameRepository);
-
-        Session session = new Session(sessionId.getAndIncrement(), gameName);
-        Player player = new Player(playerId.getAndIncrement());
-
-        log.info("<<< Session id " + session.getId() + " name=" + session.getName() + " obj=" + session.toString());
-        log.info("<<< Player id " + player.getId() + " name="+ player.getName()+ " obj=" + player.toString());
-
-//        gameRepository.put(session);
-        gameRepository.put(player);
-
-//        service.start(service.getGameId());
-        //service.connect(service.getGameName(),service.getGameId());
-        log.info("+++++++++++ Game Repo:"+ gameRepository.toString());
-
-        return session.getId();
+//    @PostConstruct
+    public Long start(String playerName) {
+        this.playerName = playerName;
+        new Thread(this, playerName).start();
+        return gameId.get();
     }
 
-    public GameRepository getGameRepository() {
-        return gameRepository;
+    public Long getGameId() {
+        return gameId.get();
     }
 
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    @Override
+    public void run() {
+
+//        while (!Thread.currentThread().isInterrupted()) {
+            // добавим игрока в очередь
+        Player player = new Player(Thread.currentThread().getName());
+
+            gameRepository.put(player);
+
+
+            if (gameRepository.playerSize() == gameRepository.PLAYERS_IN_GAME) {
+               // GameSession session = new GameSession(gameId.get(),gameRepository.getPlayersBySize(gameRepository.PLAYERS_IN_GAME));
+                gameSession.setPlayers(gameRepository.getPlayersBySize(gameRepository.PLAYERS_IN_GAME));
+                gameSession.setId(gameId.get());
+                log.info(">>>>>>>>> CREATE NEW GAME <<<<<<<<<<<<< id=" + gameId);
+//                gameRepository.put(session);
+//                candidates.clear();
+                gameId.getAndIncrement();
+            }
+//        }
+    }
 }
