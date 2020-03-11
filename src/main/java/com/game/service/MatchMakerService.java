@@ -1,15 +1,11 @@
 package com.game.service;
 
-import com.game.model.Player;
+import com.game.model.Pawn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -52,14 +48,14 @@ public class MatchMakerService implements Runnable {
 
 //        while (!Thread.currentThread().isInterrupted()) {
         // добавим игрока в очередь
-        Player player = new Player(Thread.currentThread().getName());
+        Pawn pawn = new Pawn(Thread.currentThread().getName());
 
-        gameRepository.put(player);
+        gameRepository.put(pawn);
 
 
         if (gameRepository.playerSize() == gameRepository.PLAYERS_IN_GAME) {
             // GameSession session = new GameSession(gameId.get(),gameRepository.getPlayersBySize(gameRepository.PLAYERS_IN_GAME));
-//            gameSession.setPlayers(gameRepository.getPlayersBySize(gameRepository.PLAYERS_IN_GAME));
+//            gameSession.setPawns(gameRepository.getPlayersBySize(gameRepository.PLAYERS_IN_GAME));
 //            gameSession.setId(gameId.get());
             log.info(">>>>>>>>> CREATE NEW GAME <<<<<<<<<<<<< id=" + gameId);
             gameSession.setId(gameId.get());

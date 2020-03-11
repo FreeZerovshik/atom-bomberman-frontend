@@ -1,7 +1,6 @@
 package com.game.event;
 
-import com.game.message.Topic;
-import com.game.model.Player;
+import com.game.model.Pawn;
 import com.game.service.GameRepository;
 import com.game.service.GameSession;
 import org.slf4j.Logger;
@@ -32,8 +31,8 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
         log.info("Socket Connected: " + session);
 
         // инжектим в игрока сессию
-        Player player = gameRepository.getPlayerByName(gameRepository.getCurrentPlayerName());
-        player.setSession(session);
+        Pawn pawn = gameRepository.getPlayerByName(gameRepository.getCurrentPlayerName());
+        pawn.setSession(session);
 
         gameRepository.startGame();
 
@@ -52,7 +51,7 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 //        if (gameRepository.playerSize() == GameRepository.PLAYERS_IN_GAME) {
 //            log.info(">>>> CREATING GAME NOW <<<<<");
 //            log.info("<<< Game queue size " + gameRepository.gameSize());
-//            log.info("<<< Player queue size " + gameRepository.playerSize());
+//            log.info("<<< Pawn queue size " + gameRepository.playerSize());
 
 //            gameRepository.put(session);
 //            gameSession.setSession(session);

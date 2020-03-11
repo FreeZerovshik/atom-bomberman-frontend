@@ -1,22 +1,22 @@
 package com.game.model;
 
 public class Position {
-    private Long x;
-    private Long y;
+    private Double x;
+    private Double y;
 
-    public Long getX() {
+    public Double getX() {
         return x;
     }
 
-    public void setX(Long x) {
+    public void setX(Double x) {
         this.x = x;
     }
 
-    public Long getY() {
+    public Double getY() {
         return y;
     }
 
-    public void setY(Long y) {
+    public void setY(Double y) {
         this.y = y;
     }
 }

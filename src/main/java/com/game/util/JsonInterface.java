@@ -29,4 +29,6 @@ public interface JsonInterface {
     static JsonNode getJsonNode(@NotNull String json) {
         return fromJson(json, JsonNode.class);
     }
+
+
 }

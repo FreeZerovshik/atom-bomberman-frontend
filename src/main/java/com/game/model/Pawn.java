@@ -1,31 +1,52 @@
 package com.game.model;
 
-import com.game.message.Message;
-import com.game.message.Topic;
-import com.game.tick.Tickable;
-import com.game.util.StringHelper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-
-import static com.game.util.JsonInterface.toJson;
 
 
 /**
  * Created by sergey on 3/14/17.
  */
 
-public class Pawn implements Tickable {
-    private static AtomicLong idGenerator = new AtomicLong();
+public class Pawn {
+    @JsonIgnore
+    protected static AtomicLong idGenerator = new AtomicLong();
+
     private final long id = idGenerator.getAndIncrement();
-    private String name = (new StringHelper()).randomAlphaNumeric(10);
+    private String name;
     private Position position;
-    private Long    velocity;
-    private Integer maxBombs;
-    private Integer bombPower;
-    private Long    speedModifier;
+    private double velocity = .5 ;
+    private Integer maxBombs = 1;
+    private Integer bombPower =1;
+    private double speedModifier = 1.0;
+
+    @JsonIgnore
+    protected WebSocketSession session;
+
+    public Pawn(String name) {
+        this.name = name;
+    }
 
 
-    public long getId() {
+    public static List<String> getFields(Pawn pawn){
+        List<String> list = new ArrayList<>();
+
+//        list.add(this.position.getX().toString());
+//        list.add(this.position.getY().toString());
+        list.add(pawn.getId().toString());
+        list.add(String.valueOf(pawn.getVelocity()));
+        list.add(pawn.getMaxBombs().toString());
+        list.add(pawn.getBombPower().toString());
+        list.add(String.valueOf(pawn.getSpeedModifier()));
+        list.add(pawn.getClass().toString());
+        return list;
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -33,18 +54,16 @@ public class Pawn implements Tickable {
         return name;
     }
 
-    @Override
-    public void tick(long elapsed) {
-       Topic topic = Topic.POSSESS;
-       Message msg = new Message(topic, toJson(this));
-       // session.sendMessage(new TextMessage(toJson(msg)));
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public WebSocketSession getSession() {
+        return session;
+    }
 
-//        gameRepository.put(msg);
-
-//
-       System.out.println(toJson(msg));
-       msg = null;
+    public void setSession(WebSocketSession session) {
+        this.session = session;
     }
 
     public Position getPosition() {
@@ -55,7 +74,7 @@ public class Pawn implements Tickable {
         this.position = position;
     }
 
-    public Long getVelocity() {
+    public double getVelocity() {
         return velocity;
     }
 
@@ -79,24 +98,12 @@ public class Pawn implements Tickable {
         this.bombPower = bombPower;
     }
 
-    public Long getSpeedModifier() {
+    public double getSpeedModifier() {
         return speedModifier;
     }
 
     public void setSpeedModifier(Long speedModifier) {
         this.speedModifier = speedModifier;
     }
-
-    //    public void setSession(WebSocketSession session) {
-//        this.session = session;
-//    }
-
-    //    @Override
-//    public String toString() {
-//        return "GameSession{" +
-//                "connections=" + Arrays.toString(connections) +
-//                ", id=" + id +
-//                '}';
-//    }
 
 }

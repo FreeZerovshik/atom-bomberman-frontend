@@ -1,12 +1,11 @@
 package com.game.model;
 
+import com.game.message.Topic;
 import javafx.geometry.Pos;
 
 public class Replica {
-    private Position position;
-    private Long id;
-    private String type;
     private Boolean gameOver;
+    private Topic topic = Topic.REPLICA;
 
     public static String test_message(){
         return "{\n" +

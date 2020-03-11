@@ -18,11 +18,11 @@ public class Ticker {
 //    private Set<Tickable> tickables = new LinkedHashSet<>();
 
     private long tickNumber = 0;
-    private GameSession gameSession;
+//    private GameSession gameSession;
 
-    public Ticker(GameSession gameSession){
-        this.gameSession = gameSession;
-    }
+//    public Ticker(GameSession gameSession){
+//        this.gameSession = gameSession;
+//    }
 
 
     public void gameLoop()  {
@@ -66,7 +66,7 @@ public class Ticker {
         return tickNumber;
     }
 
-    public GameSession getGameSession() {
-        return gameSession;
-    }
+//    public GameSession getGameSession() {
+//        return gameSession;
+//    }
 }
