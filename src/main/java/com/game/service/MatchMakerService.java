@@ -1,6 +1,7 @@
 package com.game.service;
 
 import com.game.model.Pawn;
+import com.game.model.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class MatchMakerService implements Runnable {
     @Autowired
     GameSession gameSession;
 
+
+
     //    @PostConstruct
     public Long start(String playerName) {
         this.playerName = playerName;
@@ -45,10 +48,9 @@ public class MatchMakerService implements Runnable {
 
     @Override
     public void run() {
-
 //        while (!Thread.currentThread().isInterrupted()) {
         // добавим игрока в очередь
-        Pawn pawn = new Pawn(Thread.currentThread().getName());
+        Pawn pawn = new Pawn(Thread.currentThread().getName(), new Position(0,0));
 
         gameRepository.put(pawn);
 

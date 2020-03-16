@@ -4,13 +4,14 @@ import java.util.List;
 
 public class MessageObjects {
 
-    private final List<String> objects;
+    private final List<Object> objects;
+    private Boolean gameOver = false;
 
-    public List<String> getObjects() {
+    public List<Object> getObjects() {
         return objects;
     }
 
-    public MessageObjects(List<String> objects) {
+    public MessageObjects(List<Object> objects) {
         this.objects = objects;
     }
 }

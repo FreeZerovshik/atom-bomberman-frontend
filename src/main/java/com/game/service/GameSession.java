@@ -5,12 +5,15 @@ import com.game.message.Message;
 import com.game.message.MessageObjects;
 import com.game.message.Topic;
 import com.game.model.Pawn;
+import com.game.model.Replica;
 import com.game.tick.Ticker;
 import com.game.util.JsonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +47,9 @@ public class GameSession  {
 
         // отправим POSSES всем игрокам в игре
 //        sendPossess();
+
+//        sendTestPossess();
+
         Ticker tick = new Ticker();
         GameMechanics gameMechanics = new GameMechanics(this,gameRepository);
         tick.registerTickable(gameMechanics);
@@ -55,15 +61,11 @@ public class GameSession  {
 
     private void pawnToJSON() throws IOException {
         Message msg;
-        List<String> objects = new ArrayList<>();
+        List<Object> objects = new ArrayList<>();
 //        List<MessageObjects> objects = new ArrayList<>();
 
         for (Pawn pawn : getPawns()) {
-//            MessageObjects messageObjects = new MessageObjects(JsonInterface.toJson(pawn));
             objects.add(JsonInterface.toJson(pawn));
-//            objects.add(messageObjects);
-//            WebSocketSession session = pawn.getSession();
-//            session.sendMessage(new TextMessage(Replica.test_message()));
         }
 
         MessageObjects messageObjects = new MessageObjects(objects);
@@ -74,20 +76,21 @@ public class GameSession  {
 
     }
 
-    private void sendPossess() throws IOException {
+    private void sendTestPossess() throws IOException {
         Message msg;
         for (Pawn pawn : getPawns()) {
             log.info("++++ Pawn:" + pawn.getName() + " [" + pawn.getId() + "]" + " in game:" + getId());
 
 //            msg = new Message(Topic.POSSESS, JsonInterface.toJson(pawn.getId()));
-//            WebSocketSession session = pawn.getSession();
+            WebSocketSession session = pawn.getSession();
 //            session.sendMessage(new TextMessage(JsonInterface.toJson(msg)));
 
             // валидация json
 //            Boolean res = JsonHelper.isValidJSON(Replica.test_message());
 //            log.info(">>> REPLICA validate json:" + res.toString());
             // тестовая реплика для проверки фронта
-//            session.sendMessage(new TextMessage(Replica.test_message()));
+            log.info("test msg="+Replica.test_message());
+            session.sendMessage(new TextMessage(Replica.test_message()));
         }
     }
 

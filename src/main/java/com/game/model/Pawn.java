@@ -1,6 +1,9 @@
 package com.game.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
@@ -11,13 +14,19 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by sergey on 3/14/17.
  */
-
+@JsonTypeInfo (use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+//@JsonSubTypes({@JsonSubTypes.Type(value = Position.class, name = "position")})
 public class Pawn {
     @JsonIgnore
     protected static AtomicLong idGenerator = new AtomicLong();
 
-    private final long id = idGenerator.getAndIncrement();
+
+    @JsonIgnore
     private String name;
+
+    private final long id = idGenerator.getAndIncrement();
+
+    private String type = "Pawn";
     private Position position;
     private double velocity = .5 ;
     private Integer maxBombs = 1;
@@ -27,24 +36,11 @@ public class Pawn {
     @JsonIgnore
     protected WebSocketSession session;
 
-    public Pawn(String name) {
+    public Pawn(String name, Position position) {
         this.name = name;
+        this.position = position;
     }
 
-
-    public static List<String> getFields(Pawn pawn){
-        List<String> list = new ArrayList<>();
-
-//        list.add(this.position.getX().toString());
-//        list.add(this.position.getY().toString());
-        list.add(pawn.getId().toString());
-        list.add(String.valueOf(pawn.getVelocity()));
-        list.add(pawn.getMaxBombs().toString());
-        list.add(pawn.getBombPower().toString());
-        list.add(String.valueOf(pawn.getSpeedModifier()));
-        list.add(pawn.getClass().toString());
-        return list;
-    }
 
     public Long getId() {
         return id;

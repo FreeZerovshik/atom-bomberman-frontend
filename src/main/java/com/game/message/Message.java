@@ -11,6 +11,7 @@ public class Message {
     private final Topic topic;
 
     private final MessageObjects data;
+//    private Boolean gameOver = false;
 
     @JsonIgnore
     private static AtomicLong idGenerator = new AtomicLong();

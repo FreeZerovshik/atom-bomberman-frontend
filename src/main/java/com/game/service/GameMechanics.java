@@ -5,11 +5,14 @@ import com.game.message.Message;
 import com.game.message.MessageObjects;
 import com.game.message.Topic;
 import com.game.model.Pawn;
+import com.game.model.Position;
+import com.game.model.Wall;
 import com.game.tick.Tickable;
 import com.game.util.JsonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
@@ -33,30 +36,39 @@ public class GameMechanics implements Tickable {
 
     @Override
     public void tick(long elapsed) throws IOException {
-        //add objects into out queue
-        //pawn
-
         Message msg;
-        List<String> objects = new ArrayList<>();
-//        List<MessageObjects> objects = new ArrayList<>();
+        List<Object> objects = new ArrayList<>();
 
+        // add Pawn json to array
         for (Pawn pawn : gameSession.getPawns()) {
-//            MessageObjects messageObjects = new MessageObjects(JsonInterface.toJson(pawn));
-            objects.add(JsonInterface.toJson(pawn));
-//            objects.add(messageObjects);
-//            WebSocketSession session = pawn.getSession();
-//            session.sendMessage(new TextMessage(Replica.test_message()));
+            objects.add(pawn);
         }
+
+        Wall wall = new Wall(new Position(16,12));
+        objects.add(wall);
 
         MessageObjects messageObjects = new MessageObjects(objects);
         msg = new Message(Topic.REPLICA, messageObjects);
 
         String json = JsonInterface.toJson(msg);
 
-        gameRepository.put( idGenerator.getAndIncrement(), json);
+        gameRepository.put( idGenerator.getAndIncrement(), json.replace("\\",""));
 
 
         log.info("OutQueue size="+gameRepository.outQueueSize());
+        sendMessage();
 
+        log.info("OutQueue size2="+gameRepository.outQueueSize());
     }
+
+    public void sendMessage() throws IOException {
+        if (gameRepository.outQueueSize() > 0L) {
+            String msg = gameRepository.getMessage();
+            for (Pawn pawn : gameSession.getPawns()) {
+                WebSocketSession session = pawn.getSession();
+                session.sendMessage(new TextMessage(msg));
+            }
+        }
+    }
+
 }

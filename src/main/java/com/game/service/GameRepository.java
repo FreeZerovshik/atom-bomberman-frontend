@@ -43,6 +43,14 @@ public class GameRepository {
         this.gameQueue.put(gameSession.getId(), gameSession);
     }
 
+    public String getMessage(){
+        Long key = outQueue.keys().nextElement();
+        String str = outQueue.get(key);
+        outQueue.remove(key);
+        log.info("json="+ str);
+        return str;
+    }
+
     public String getCurrentPlayerName() {
         return matchMakerService.getPlayerName();
     }
@@ -62,6 +70,8 @@ public class GameRepository {
 
         return pawns;
     }
+
+
 
     public Pawn getPlayerByName(String name) {
         return playerQueue.get(name);

@@ -25,8 +25,9 @@ var MessageBroker = function () {
 MessageBroker.prototype.handleReplica = function (msg) {
 //    console.log(msg);
 //    alert(msg);
-    var gameObjects = msg.data.objects// JSON.parse(msg.data.objects);
-
+    var gameObjects = msg.data.objects;
+//     var gameObjects = JSON.parse(msg.data.objects);
+     console.log(msg);
     gGameEngine.game.gc(gameObjects);
 };
 
