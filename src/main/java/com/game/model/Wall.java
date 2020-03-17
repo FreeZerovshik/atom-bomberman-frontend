@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Wall {
     Position position;
 
-    private String type = "Wall";
+    private tileType type = tileType.Wood;
 
     @JsonIgnore
     protected static AtomicLong idGenerator = new AtomicLong();

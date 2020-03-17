@@ -26,12 +26,13 @@ public class Pawn {
 
     private final long id = idGenerator.getAndIncrement();
 
-    private String type = "Pawn";
+    private tileType type = tileType.Pawn;
     private Position position;
     private double velocity = .5 ;
     private Integer maxBombs = 1;
     private Integer bombPower =1;
     private double speedModifier = 1.0;
+    private Boolean alive = true;
 
     @JsonIgnore
     protected WebSocketSession session;

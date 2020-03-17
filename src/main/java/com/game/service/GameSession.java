@@ -29,6 +29,9 @@ public class GameSession  {
     @Autowired
     GameRepository gameRepository;
 
+    @Autowired
+    Replicator replicator;
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -45,24 +48,19 @@ public class GameSession  {
 
         this.setPawns(gameRepository.getPlayersBySize(GameRepository.PLAYERS_IN_GAME));
 
-        // отправим POSSES всем игрокам в игре
-//        sendPossess();
-
-//        sendTestPossess();
+        GameMechanics gameMechanics = new GameMechanics(this,replicator);
+//        replicator.sendReplica(gameMechanics.generateWalls());
+        replicator.sendReplica(gameMechanics.generateMaze(270,420));
 
         Ticker tick = new Ticker();
-        GameMechanics gameMechanics = new GameMechanics(this,gameRepository);
         tick.registerTickable(gameMechanics);
         tick.gameLoop();
-
-//        pawnToJSON();
 
     }
 
     private void pawnToJSON() throws IOException {
         Message msg;
         List<Object> objects = new ArrayList<>();
-//        List<MessageObjects> objects = new ArrayList<>();
 
         for (Pawn pawn : getPawns()) {
             objects.add(JsonInterface.toJson(pawn));

@@ -1,6 +1,6 @@
 package com.game.util;
 
-public class StringHelper {
+public class Helper {
 
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -13,5 +13,14 @@ public class StringHelper {
             builder.append(ALPHA_NUMERIC_STRING.charAt(character));
         }
         return builder.toString();
+    }
+
+    /**
+     * Метод получения псевдослучайного целого числа от min до max (включая max);
+     */
+    public static int random(int min, int max)
+    {
+        max -= min;
+        return (int) (Math.random() * ++max) + min;
     }
 }
