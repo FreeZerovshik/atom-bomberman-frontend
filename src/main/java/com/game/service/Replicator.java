@@ -51,7 +51,7 @@ public class Replicator {
 
         String json = JsonInterface.toJson(msg);
 
-        gameRepository.put( idGenerator.getAndIncrement(), json.replace("\\",""));
+        gameRepository.put( idGenerator.getAndIncrement(), json);
 
 
         log.info("OutQueue size="+gameRepository.outQueueSize());

@@ -32,6 +32,7 @@ public class GameSession  {
     @Autowired
     Replicator replicator;
 
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -49,8 +50,16 @@ public class GameSession  {
         this.setPawns(gameRepository.getPlayersBySize(GameRepository.PLAYERS_IN_GAME));
 
         GameMechanics gameMechanics = new GameMechanics(this,replicator);
-//        replicator.sendReplica(gameMechanics.generateWalls());
-        replicator.sendReplica(gameMechanics.generateMaze(270,420));
+
+        //TODO вынести в отдельный метод инициализации
+
+        // generate initial objects arrray (maze, pawn ...) and send to front
+        List<Object> initialObjects = gameMechanics.generateMaze(270, 420);
+        gameMechanics.getStartPositionPawn(getPawns());
+
+        initialObjects.addAll(getPawns());
+
+        replicator.sendReplica(initialObjects);
 
         Ticker tick = new Ticker();
         tick.registerTickable(gameMechanics);
@@ -78,15 +87,8 @@ public class GameSession  {
         Message msg;
         for (Pawn pawn : getPawns()) {
             log.info("++++ Pawn:" + pawn.getName() + " [" + pawn.getId() + "]" + " in game:" + getId());
-
-//            msg = new Message(Topic.POSSESS, JsonInterface.toJson(pawn.getId()));
             WebSocketSession session = pawn.getSession();
-//            session.sendMessage(new TextMessage(JsonInterface.toJson(msg)));
 
-            // валидация json
-//            Boolean res = JsonHelper.isValidJSON(Replica.test_message());
-//            log.info(">>> REPLICA validate json:" + res.toString());
-            // тестовая реплика для проверки фронта
             log.info("test msg="+Replica.test_message());
             session.sendMessage(new TextMessage(Replica.test_message()));
         }

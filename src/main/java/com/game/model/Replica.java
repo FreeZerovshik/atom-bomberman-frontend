@@ -3,9 +3,12 @@ package com.game.model;
 import com.game.message.Topic;
 import javafx.geometry.Pos;
 
+import java.util.List;
+
 public class Replica {
     private Boolean gameOver;
     private Topic topic = Topic.REPLICA;
+    private List<Object> object;
 
     public static String test_message(){
         return "{\n" +

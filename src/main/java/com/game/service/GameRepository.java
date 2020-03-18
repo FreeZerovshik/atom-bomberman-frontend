@@ -26,6 +26,7 @@ public class GameRepository {
 
     private final ConcurrentHashMap<Long, GameSession> gameQueue = new ConcurrentHashMap<>();  // очередь из игр
     private final ConcurrentHashMap<String, Pawn> playerQueue = new ConcurrentHashMap<>();  // очередь из игроков
+    private final ConcurrentHashMap<String, Pawn> Queue = new ConcurrentHashMap<>();  // очередь из игроков
     private final ConcurrentHashMap<Long, String> outQueue = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, String> inQueue = new ConcurrentHashMap<>();
 
@@ -33,12 +34,9 @@ public class GameRepository {
     public void put(Long id, String json) {
         this.outQueue.put(id, json);
     }
-
-    //    public void put(WebSocketSession socket){this.gameQueue.put(matchMakerService.getGameId(), socket);}
     public void put(Pawn pawn) {
         this.playerQueue.put(pawn.getName(), pawn);
     }
-
     public void put(GameSession gameSession) {
         this.gameQueue.put(gameSession.getId(), gameSession);
     }

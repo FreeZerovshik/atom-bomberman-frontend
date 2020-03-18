@@ -11,7 +11,6 @@ public class Message {
     private final Topic topic;
 
     private final MessageObjects data;
-//    private Boolean gameOver = false;
 
     @JsonIgnore
     private static AtomicLong idGenerator = new AtomicLong();
@@ -25,25 +24,8 @@ public class Message {
         this.data = data;
     }
 
-//    Topic getTopic() {
-//        return topic;
-//    }
-
-//    String getData() {
-//        return data;
-//    }
-
     public long getId() {
         return id;
     }
 
-
-    @Override
-    public String toString() {
-        return "Message{" +
-                "topic=" + topic +
-                ", data='" + data + '\'' +
-                ", id=" + id +
-                '}';
-    }
 }

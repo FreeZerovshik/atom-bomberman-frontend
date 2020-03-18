@@ -24,18 +24,4 @@ public class Session {
         return Name;
     }
 
-
-//    private final Connection[] connections;
-//    public GameSession(Connection[] connections) {
-//        this.connections = connections;
-//    }
-
-//    @Override
-//    public String toString() {
-//        return "GameSession{" +
-//                "connections=" + Arrays.toString(connections) +
-//                ", id=" + id +
-//                '}';
-//    }
-
 }

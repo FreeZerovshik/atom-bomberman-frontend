@@ -66,8 +66,6 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-//        log.info(">>>>>>>>> handleTextMessage " + message.toString());
-
         session.sendMessage(new TextMessage("{ \"history\": [ \"ololo\", \"2\" ] }"));
         log.info("Received " + message.toString());
     }
