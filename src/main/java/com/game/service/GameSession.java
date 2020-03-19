@@ -32,7 +32,25 @@ public class GameSession  {
     @Autowired
     Replicator replicator;
 
+    public void sendPawns() throws IOException {
+        List<Object> objects = new ArrayList<>();
 
+        // add Pawn json to array
+        for (Pawn pawn : getPawns()) {
+            objects.add(pawn);
+        }
+
+        replicator.sendReplica(objects);
+    }
+
+    public Pawn getPawn(WebSocketSession session){
+        for(Pawn pawn : pawns){
+            if(session.equals(pawn.getSession())){
+                return pawn;
+            }
+        }
+        return null;
+    }
     public void setId(Long id) {
         this.id = id;
     }

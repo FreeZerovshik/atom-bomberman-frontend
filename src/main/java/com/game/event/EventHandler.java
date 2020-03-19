@@ -1,8 +1,16 @@
 package com.game.event;
 
+import com.game.message.Message;
+import com.game.message.MessageObjects;
+import com.game.message.Topic;
+import com.game.model.Direction;
 import com.game.model.Pawn;
+import com.game.network.ConnectionPool;
 import com.game.service.GameRepository;
 import com.game.service.GameSession;
+import com.game.service.Replicator;
+import com.game.util.JsonHelper;
+import com.game.util.JsonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +21,29 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Component
 public class EventHandler extends TextWebSocketHandler implements WebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(EventHandler.class);
+    private static ConcurrentHashMap<WebSocketSession, Pawn> mapPawns= new ConcurrentHashMap<>();
+
+
+    private static final Object lock = new Object();
+
+    @Autowired
+    ConnectionPool connectionPool;
 
     @Autowired
     private GameRepository gameRepository;
 
     @Autowired
     private GameSession gameSession;
+
+    @Autowired
+    Replicator replicator;
 
 
     @Override
@@ -30,45 +52,25 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 
         log.info("Socket Connected: " + session);
 
-        // инжектим в игрока сессию
-        Pawn pawn = gameRepository.getPlayerByName(gameRepository.getCurrentPlayerName());
-        pawn.setSession(session);
+            // инжектим в игрока сессию
+         Pawn pawn = gameRepository.getPlayerByName(gameRepository.getCurrentPlayerName());
+         pawn.setSession(session);
 
-        gameRepository.startGame();
+         connectionPool.add(session, pawn);
 
-
-
-
-//       gameRepository.put(session);
-
-
-//       String tst_msg = "{\"id\":1,\"type\":\"Wood\",\"position\":{\"y\":20,\"x\":10}}";
-
-//        String posses = "{\"topic\":\"posses\", \"data\": 123}";
-        // (new Ticker()).gameLoop(session,tst_msg);
-//        session.sendMessage(new TextMessage(posses));
-
-//        if (gameRepository.playerSize() == GameRepository.PLAYERS_IN_GAME) {
-//            log.info(">>>> CREATING GAME NOW <<<<<");
-//            log.info("<<< Game queue size " + gameRepository.gameSize());
-//            log.info("<<< Pawn queue size " + gameRepository.playerSize());
-
-//            gameRepository.put(session);
-//            gameSession.setSession(session);
-//            gameSession.setSession(session);
-//            gameSession.startGameThread("test");
-
-//            MatchMakerService matchMakerService = new MatchMakerService();
-
-//        }
+         gameRepository.startGame();
 
     }
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        session.sendMessage(new TextMessage("{ \"history\": [ \"ololo\", \"2\" ] }"));
-        log.info("Received " + message.toString());
-    }
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+//        session.sendMessage(new TextMessage("{ \"history\": [ \"ololo\", \"2\" ] }"));
+        log.info("Received " + message.getPayload());
+        synchronized (session) {
+            Pawn pawn = connectionPool.getPlayer(session);
+            pawn.move(Direction.UP);
+        }
+     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {

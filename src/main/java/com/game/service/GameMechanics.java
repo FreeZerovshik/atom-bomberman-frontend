@@ -35,17 +35,10 @@ public class GameMechanics implements Tickable {
 
     @Override
     public void tick(long elapsed) throws IOException {
-
-        List<Object> objects = new ArrayList<>();
-
-        // add Pawn json to array
-        for (Pawn pawn : gameSession.getPawns()) {
-            objects.add(pawn);
-        }
-
-        replicator.sendReplica(objects);
-
+        gameSession.sendPawns();
     }
+
+
 
 
     public List<Object> generateTestWalls(){

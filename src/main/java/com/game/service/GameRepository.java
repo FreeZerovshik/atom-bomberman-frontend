@@ -26,7 +26,6 @@ public class GameRepository {
 
     private final ConcurrentHashMap<Long, GameSession> gameQueue = new ConcurrentHashMap<>();  // очередь из игр
     private final ConcurrentHashMap<String, Pawn> playerQueue = new ConcurrentHashMap<>();  // очередь из игроков
-    private final ConcurrentHashMap<String, Pawn> Queue = new ConcurrentHashMap<>();  // очередь из игроков
     private final ConcurrentHashMap<Long, String> outQueue = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, String> inQueue = new ConcurrentHashMap<>();
 
@@ -45,7 +44,7 @@ public class GameRepository {
         Long key = outQueue.keys().nextElement();
         String str = outQueue.get(key);
         outQueue.remove(key);
-        log.info("json="+ str);
+//        log.info("json="+ str);
         return str;
     }
 
@@ -71,6 +70,7 @@ public class GameRepository {
 
 
 
+
     public Pawn getPlayerByName(String name) {
         return playerQueue.get(name);
     }
@@ -78,7 +78,7 @@ public class GameRepository {
     public Long outQueueSize() {return Long.valueOf(outQueue.size()); }
 
     public Long playerSize() {
-        playerQueue.forEach((k, v) -> System.out.println(k + " contains Pawn id=" + v.getId() + " name=" + v.getName() + " session=" + v.getSession()));
+//        playerQueue.forEach((k, v) -> System.out.println(k + " contains Pawn id=" + v.getId() + " name=" + v.getName() + " session=" + v.getSession()));
         return Long.valueOf(playerQueue.size());
     }
 

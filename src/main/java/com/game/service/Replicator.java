@@ -29,12 +29,8 @@ public class Replicator {
     @Autowired
     GameRepository gameRepository;
 
-    public String getPawnJson() {
-        List<Pawn> pawnList =  gameSession.getPawns();
-        return null;
-    }
 
-    public void sendMessage() throws IOException {
+    public void sendMessageFromQueue() throws IOException {
         if (gameRepository.outQueueSize() > 0L) {
             String msg = gameRepository.getMessage();
             for (Pawn pawn : gameSession.getPawns()) {
@@ -45,19 +41,15 @@ public class Replicator {
     }
 
     public void sendReplica(List<Object> objects) throws IOException {
-        Message msg;
-        MessageObjects messageObjects = new MessageObjects(objects);
-        msg = new Message(Topic.REPLICA, messageObjects);
+
+        Message msg = new Message(Topic.REPLICA, new MessageObjects(objects));
 
         String json = JsonInterface.toJson(msg);
 
         gameRepository.put( idGenerator.getAndIncrement(), json);
 
+        sendMessageFromQueue();
 
-        log.info("OutQueue size="+gameRepository.outQueueSize());
-        sendMessage();
-
-        log.info("OutQueue size2="+gameRepository.outQueueSize());
     }
 
 }
