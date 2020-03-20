@@ -1,13 +1,16 @@
 package com.game.event;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.game.message.Message;
 import com.game.message.MessageObjects;
 import com.game.message.Topic;
 import com.game.model.Direction;
+import com.game.model.Game;
 import com.game.model.Pawn;
 import com.game.network.ConnectionPool;
 import com.game.service.GameRepository;
 import com.game.service.GameSession;
+import com.game.service.MatchMakerService;
 import com.game.service.Replicator;
 import com.game.util.JsonHelper;
 import com.game.util.JsonInterface;
@@ -33,8 +36,8 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 
     private static final Object lock = new Object();
 
-    @Autowired
-    ConnectionPool connectionPool;
+//    @Autowired
+    private ConnectionPool connectionPool;
 
     @Autowired
     private GameRepository gameRepository;
@@ -45,20 +48,26 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
     @Autowired
     Replicator replicator;
 
+    @Autowired
+    MatchMakerService matchMakerService;
+
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
-
+        connectionPool = ConnectionPool.getInstance();
         log.info("Socket Connected: " + session);
 
-            // инжектим в игрока сессию
-         Pawn pawn = gameRepository.getPlayerByName(gameRepository.getCurrentPlayerName());
-         pawn.setSession(session);
+         // вычитываем игрока из очереди и помещаем в очередь в новой игре
+         connectionPool.add(session, gameRepository.getPlayer());
+         log.info("pool size="+connectionPool.size());
 
-         connectionPool.add(session, pawn);
+         if (connectionPool.size() == GameRepository.PLAYERS_IN_GAME) {
+             matchMakerService.startGame(connectionPool.getPlayerPool());
+             connectionPool.newPlayerPool();
+         }
 
-         gameRepository.startGame();
+
 
     }
 
@@ -66,10 +75,15 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 //        session.sendMessage(new TextMessage("{ \"history\": [ \"ololo\", \"2\" ] }"));
         log.info("Received " + message.getPayload());
-        synchronized (session) {
-            Pawn pawn = connectionPool.getPlayer(session);
-            pawn.move(Direction.UP);
-        }
+        JsonNode jsonNode = JsonInterface.getJsonNode(message.getPayload());
+        String direction = jsonNode.findValue("direction").asText();
+
+//        synchronized (session) {
+            Pawn pawn = gameSession.getPlayer(session);
+            pawn.move(direction);
+            String replica = replicator.getReplica(gameSession.getPlayers());
+            gameSession.broadcast(replica);
+//        }
      }
 
     @Override

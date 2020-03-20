@@ -30,26 +30,44 @@ public class Replicator {
     GameRepository gameRepository;
 
 
-    public void sendMessageFromQueue() throws IOException {
+    public void sendMessageFromQueue() {
         if (gameRepository.outQueueSize() > 0L) {
             String msg = gameRepository.getMessage();
-            for (Pawn pawn : gameSession.getPawns()) {
-                WebSocketSession session = pawn.getSession();
-                session.sendMessage(new TextMessage(msg));
-            }
+
+//            for (Pawn pawn : gameSession.getPlayersInGame()) {
+//                WebSocketSession session = pawn.getSession();
+//                session.sendMessage(new TextMessage(msg));
+//            }
         }
     }
 
-    public void sendReplica(List<Object> objects) throws IOException {
+//    public void sendReplica(List<Object> objects) throws IOException {
+//
+//        Message msg = new Message(Topic.REPLICA, new MessageObjects(objects));
+//
+//        String json = JsonInterface.toJson(msg);
+//
+//        gameRepository.put( idGenerator.getAndIncrement(), json);
+//
+//        sendMessageFromQueue();
+//
+//    }
 
-        Message msg = new Message(Topic.REPLICA, new MessageObjects(objects));
+    public void sendReplica(Object obj)  {
+
+        Message msg = new Message(Topic.REPLICA, new MessageObjects(obj));
 
         String json = JsonInterface.toJson(msg);
-
+        log.info("json for send="+json);
         gameRepository.put( idGenerator.getAndIncrement(), json);
 
-        sendMessageFromQueue();
+//        sendMessageFromQueue();
 
+    }
+
+    public String getReplica(List<Object> obj)  {
+        Message msg = new Message(Topic.REPLICA, new MessageObjects(obj));
+        return JsonInterface.toJson(msg);
     }
 
 }

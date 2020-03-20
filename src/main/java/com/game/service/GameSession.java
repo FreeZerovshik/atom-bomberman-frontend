@@ -1,13 +1,9 @@
 package com.game.service;
 
 import com.game.controller.MatchMakerController;
-import com.game.message.Message;
-import com.game.message.MessageObjects;
-import com.game.message.Topic;
 import com.game.model.Pawn;
-import com.game.model.Replica;
 import com.game.tick.Ticker;
-import com.game.util.JsonInterface;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +13,18 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.game.service.GameRepository.PLAYERS_IN_GAME;
 
 @Component
 public class GameSession  {
     private static final Logger log = LoggerFactory.getLogger(MatchMakerController.class);
 
     private Long id;
-    private List<Pawn> pawns;
+    private ConcurrentHashMap<WebSocketSession, Pawn> playersInGame;
 
     @Autowired
     GameRepository gameRepository;
@@ -32,40 +32,32 @@ public class GameSession  {
     @Autowired
     Replicator replicator;
 
-    public void sendPawns() throws IOException {
-        List<Object> objects = new ArrayList<>();
+    public void sendPawns()  {  playersInGame.forEachValue(PLAYERS_IN_GAME, player ->  replicator.sendReplica(player)); }
 
-        // add Pawn json to array
-        for (Pawn pawn : getPawns()) {
-            objects.add(pawn);
-        }
-
-        replicator.sendReplica(objects);
-    }
-
-    public Pawn getPawn(WebSocketSession session){
-        for(Pawn pawn : pawns){
-            if(session.equals(pawn.getSession())){
-                return pawn;
-            }
-        }
-        return null;
-    }
+//    public Pawn getPawn(WebSocketSession session){
+//        return connectionPool.getPlayer(session);
+//    }
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setPawns(List<Pawn> pawns) {
-        this.pawns = pawns;
+    public void setPlayersInGame(ConcurrentHashMap playersInGame) {
+        this.playersInGame = playersInGame;
     }
 
-    public Long getId() {
-        return id;
+    public Long getId() {return id; }
+
+    public Pawn getPlayer(WebSocketSession session) {
+        return playersInGame.get(session);
     }
 
-    public void startGame() throws IOException {
+    public List<Object> getPlayers() {
+        List<Object> objectList = new ArrayList<>();
+        objectList.addAll(playersInGame.values());
+        return objectList;
+    }
 
-        this.setPawns(gameRepository.getPlayersBySize(GameRepository.PLAYERS_IN_GAME));
+    public void startGame() {
 
         GameMechanics gameMechanics = new GameMechanics(this,replicator);
 
@@ -73,46 +65,61 @@ public class GameSession  {
 
         // generate initial objects arrray (maze, pawn ...) and send to front
         List<Object> initialObjects = gameMechanics.generateMaze(270, 420);
-        gameMechanics.getStartPositionPawn(getPawns());
 
-        initialObjects.addAll(getPawns());
+        initialObjects.addAll(playersInGame.values());
 
-        replicator.sendReplica(initialObjects);
+        broadcast(replicator.getReplica(initialObjects));
 
         Ticker tick = new Ticker();
         tick.registerTickable(gameMechanics);
-        tick.gameLoop();
+//        tick.gameLoop();
 
     }
 
-    private void pawnToJSON() throws IOException {
-        Message msg;
-        List<Object> objects = new ArrayList<>();
 
-        for (Pawn pawn : getPawns()) {
-            objects.add(JsonInterface.toJson(pawn));
-        }
-
-        MessageObjects messageObjects = new MessageObjects(objects);
-        msg = new Message(Topic.REPLICA, messageObjects);
-
-        String str = JsonInterface.toJson(msg);
-        log.info(">>> REPLICA json:" + str.toString());
-
-    }
-
-    private void sendTestPossess() throws IOException {
-        Message msg;
-        for (Pawn pawn : getPawns()) {
-            log.info("++++ Pawn:" + pawn.getName() + " [" + pawn.getId() + "]" + " in game:" + getId());
-            WebSocketSession session = pawn.getSession();
-
-            log.info("test msg="+Replica.test_message());
-            session.sendMessage(new TextMessage(Replica.test_message()));
+    public void send(@NotNull WebSocketSession session, @NotNull String msg) {
+        if (session.isOpen()) {
+            try {
+                session.sendMessage(new TextMessage(msg));
+            } catch (IOException ignored) {
+            }
         }
     }
-
-    public List<Pawn> getPawns() {
-        return pawns;
+    public void broadcast(@NotNull String msg) {
+        log.info("send json="+ msg);
+        playersInGame.forEachKey(1, session -> send(session, msg));
     }
+
+//    private void pawnToJSON() throws IOException {
+//        Message msg;
+//        List<Object> objects = new ArrayList<>();
+//
+//        for (Pawn pawn : getPlayersInGame()) {
+//            objects.add(JsonInterface.toJson(pawn));
+//        }
+//
+//        MessageObjects messageObjects = new MessageObjects(objects);
+//        msg = new Message(Topic.REPLICA, messageObjects);
+//
+//        String str = JsonInterface.toJson(msg);
+//        log.info(">>> REPLICA json:" + str.toString());
+//
+//    }
+
+//    private void sendTestPossess() throws IOException {
+//        Message msg;
+//        for (Pawn pawn : getPlayersInGame()) {
+//            log.info("++++ Pawn:" + pawn.getName() + " [" + pawn.getId() + "]" + " in game:" + getId());
+//            WebSocketSession session = pawn.getSession();
+//
+//            log.info("test msg="+Replica.test_message());
+//            session.sendMessage(new TextMessage(Replica.test_message()));
+//        }
+//    }
+
+//    public List<Pawn> getPlayersInGame() {
+//        List<Pawn> pawns = new ArrayList<>();
+//        playersInGame.forEach((session, player) ->  pawns.add(player));
+//        return pawns;
+//    }
 }

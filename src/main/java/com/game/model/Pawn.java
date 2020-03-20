@@ -103,14 +103,14 @@ public class Pawn {
         this.speedModifier = speedModifier;
     }
 
-    public Pawn move(Direction direction){
+    public void move(String direction){
+
         switch (direction){
-            case UP: this.position.setY(this.position.getY()+1);
-            case DOWN: this.position.setY(this.position.getY()-1);
-            case LEFT: this.position.setX(this.position.getX()-1);
-            case RIGHT:this.position.setX(this.position.getX()+1);
+            case "UP":    position.setY(position.getY()+1); break;
+            case "DOWN":  position.setY(position.getY()-1); break;
+            case "LEFT":  position.setX(position.getX()-1); break;
+            case "RIGHT": position.setX(position.getX()+1); break;
         }
-        return this;
     }
 
 }

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -92,12 +93,12 @@ public class GameMechanics implements Tickable {
     }
 
 
-    public void getStartPositionPawn(List<Pawn> pawns){
-        Collections.shuffle(empty);
-
-        for(Pawn pawn: pawns){
-            Position pos = (Position) empty.get(Helper.random(0,empty.size()-1));
-            pawn.setPosition(pos);
-        }
-    }
+//    public void getStartPositionPawn(){
+//        Collections.shuffle(empty);
+//
+//        for(Pawn pawn: ){
+//            Position pos = (Position) empty.get(Helper.random(0,empty.size()-1));
+//            pawn.setPosition(pos);
+//        }
+//    }
 }

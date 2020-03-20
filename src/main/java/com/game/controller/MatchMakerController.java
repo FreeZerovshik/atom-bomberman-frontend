@@ -28,6 +28,6 @@ public class MatchMakerController {
     public ResponseEntity join(@RequestParam("name") String playerName){
 //        log.info(">>> To Game join player with name : " + playerName);
 
-        return  ResponseEntity.ok().body(matchmaker.start(playerName));
+        return  ResponseEntity.ok().body(matchmaker.addPlayerToGame(playerName));
     }
 }

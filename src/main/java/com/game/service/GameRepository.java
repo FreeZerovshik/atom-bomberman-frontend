@@ -44,7 +44,7 @@ public class GameRepository {
         Long key = outQueue.keys().nextElement();
         String str = outQueue.get(key);
         outQueue.remove(key);
-//        log.info("json="+ str);
+        log.info("json="+ str);
         return str;
     }
 
@@ -52,24 +52,32 @@ public class GameRepository {
         return matchMakerService.getPlayerName();
     }
 
-    public List<Pawn> getPlayersBySize(int size) {
-        List<Pawn> pawns = new ArrayList<>();
-//        Enumeration<String> keys = playerQueue.keys();
-        String key;
-        //TODO интересно в многопоточке не будет потерь ключей при такам подходет, может обернуть как потокобезопасный блок?
-        for (int i = 0; i <= size - 1; i++) {
-            key = playerQueue.keys().nextElement();
-            pawns.add(playerQueue.get(key));
-            playerQueue.remove(key);
+//    public ConcurrentHashMap getPlayersBySize(int size) {
+//        ConcurrentHashMap pawns = new ArrayList<>();
+////        Enumeration<String> keys = playerQueue.keys();
+//        String key;
+//        //TODO интересно в многопоточке не будет потерь ключей при такам подходет, может обернуть как потокобезопасный блок?
+//        for (int i = 0; i <= size - 1; i++) {
+//            key = playerQueue.keys().nextElement();
+//            pawns.add(playerQueue.get(key));
+//            playerQueue.remove(key);
+//        }
+//
+////        playerQueue.forEach((k, v) ->  pawns.add(v));
+//
+//        return pawns;
+//    }
+
+        public Pawn getPlayer(){
+
+           if (playerQueue.size() >0 ) {
+               String key = playerQueue.keys().nextElement();
+               Pawn pawn = playerQueue.get(key);
+               playerQueue.remove(key);
+               return pawn;
+           }
+           return null;
         }
-
-//        playerQueue.forEach((k, v) ->  pawns.add(v));
-
-        return pawns;
-    }
-
-
-
 
     public Pawn getPlayerByName(String name) {
         return playerQueue.get(name);
@@ -78,7 +86,7 @@ public class GameRepository {
     public Long outQueueSize() {return Long.valueOf(outQueue.size()); }
 
     public Long playerSize() {
-//        playerQueue.forEach((k, v) -> System.out.println(k + " contains Pawn id=" + v.getId() + " name=" + v.getName() + " session=" + v.getSession()));
+        playerQueue.forEach((k, v) -> System.out.println(k + " contains Pawn id=" + v.getId() + " name=" + v.getName() + " session=" + v.getSession()));
         return Long.valueOf(playerQueue.size());
     }
 

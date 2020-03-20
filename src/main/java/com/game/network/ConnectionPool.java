@@ -1,37 +1,39 @@
 package com.game.network;
 
-import com.game.message.Message;
-import com.game.message.MessageObjects;
-import com.game.message.Topic;
 import com.game.model.Pawn;
-import com.game.util.JsonInterface;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+//@Component
 public class ConnectionPool {
     private static final Logger log = LogManager.getLogger(ConnectionPool.class);
     private static final ConnectionPool instance = new ConnectionPool();
     private static final int PARALLELISM_LEVEL = 4;
 
-    private final ConcurrentHashMap<WebSocketSession, Pawn> pool;
+    private ConcurrentHashMap<WebSocketSession, Pawn> playerPool;
 
     public static ConnectionPool getInstance() {
         return instance;
     }
 
     private ConnectionPool() {
-        pool = new ConcurrentHashMap<>();
+        playerPool = new ConcurrentHashMap<>();
+    }
+
+    public ConcurrentHashMap getPlayerPool(){
+        return this.playerPool;
+    }
+
+    public void newPlayerPool(){
+        this.playerPool = new ConcurrentHashMap<>();
     }
 
     public void send(@NotNull WebSocketSession session, @NotNull String msg) {
@@ -44,11 +46,11 @@ public class ConnectionPool {
     }
 
     public void broadcast(@NotNull String msg) {
-        pool.forEachKey(PARALLELISM_LEVEL, session -> send(session, msg));
+        playerPool.forEachKey(PARALLELISM_LEVEL, session -> send(session, msg));
     }
 
     public void shutdown() {
-        pool.forEachKey(PARALLELISM_LEVEL, session -> {
+        playerPool.forEachKey(PARALLELISM_LEVEL, session -> {
             if (session.isOpen()) {
                 try {
                     session.close();
@@ -59,11 +61,17 @@ public class ConnectionPool {
     }
 
     public Pawn getPlayer(WebSocketSession session) {
-        return pool.get(session);
+        return playerPool.get(session);
+    }
+
+    public Collection<Pawn> getPlayers() {
+//        List<Pawn> pawns = new ArrayList<>();
+//        pool.forEach((k,v) -> pawns.add(v));
+        return playerPool.values();
     }
 
     public WebSocketSession getSession(Pawn player) {
-        return pool.entrySet().stream()
+        return playerPool.entrySet().stream()
                 .filter(entry -> entry.getValue().equals(player))
                 .map(Map.Entry::getKey)
                 .findFirst()
@@ -71,12 +79,16 @@ public class ConnectionPool {
     }
 
     public void add(WebSocketSession session, Pawn player) {
-        if (pool.putIfAbsent(session, player) == null) {
+        if (playerPool.putIfAbsent(session, player) == null) {
             log.info("{} joined", player);
         }
     }
 
+    public int size(){
+        return playerPool.size();
+    }
+
     public void remove(WebSocketSession session) {
-        pool.remove(session);
+        playerPool.remove(session);
     }
 }
