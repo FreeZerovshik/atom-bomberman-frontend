@@ -1,6 +1,7 @@
 package com.game.service;
 
 import com.game.controller.MatchMakerController;
+import com.game.model.Bomb;
 import com.game.model.Pawn;
 import com.game.tick.Ticker;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +26,7 @@ public class GameSession  {
 
     private Long id;
     private ConcurrentHashMap<WebSocketSession, Pawn> playersInGame;
+    private ConcurrentHashMap<WebSocketSession, Bomb> bombInGame = new ConcurrentHashMap<>();
 
     @Autowired
     GameRepository gameRepository;
@@ -41,9 +43,17 @@ public class GameSession  {
         this.id = id;
     }
 
+    public void put(WebSocketSession session, Bomb bomb){
+        bombInGame.put(session,bomb);
+    }
+
+    public Bomb getBomb(WebSocketSession session){ return bombInGame.get(session);}
+
     public void setPlayersInGame(ConcurrentHashMap playersInGame) {
         this.playersInGame = playersInGame;
     }
+
+    public int sizeBombInGame(){return bombInGame.size();}
 
     public Long getId() {return id; }
 
@@ -51,8 +61,9 @@ public class GameSession  {
         return playersInGame.get(session);
     }
 
-    public List<Object> getPlayers() {
+    public List<Object> getListObjects(Object object) {
         List<Object> objectList = new ArrayList<>();
+        if (object != null) objectList.add(object);
         objectList.addAll(playersInGame.values());
         return objectList;
     }
@@ -67,7 +78,7 @@ public class GameSession  {
         List<Object> initialObjects = gameMechanics.generateMaze(270, 420);
 
         initialObjects.addAll(playersInGame.values());
-
+        playersInGame.forEach((k,v)->gameMechanics.getStartPositionPawn(v));
         broadcast(replicator.getReplica(initialObjects));
 
         Ticker tick = new Ticker();

@@ -1,13 +1,9 @@
 package com.game.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -26,7 +22,7 @@ public class Pawn {
 
     private final long id = idGenerator.getAndIncrement();
 
-    private tileType type = tileType.Pawn;
+    private objectType type = objectType.Pawn;
     private Position position;
     private double velocity = .5 ;
     private Integer maxBombs = 1;

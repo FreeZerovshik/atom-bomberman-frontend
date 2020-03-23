@@ -40,8 +40,6 @@ public class GameMechanics implements Tickable {
     }
 
 
-
-
     public List<Object> generateTestWalls(){
         int step = 10;
         int cntWalls = 50;
@@ -61,15 +59,17 @@ public class GameMechanics implements Tickable {
     }
 
     public List<Object> generateMaze(int w, int h){
-        Ellers ellers = new Ellers(h/28, w/28);
+        int pixel = 28;
+
+        Ellers ellers = new Ellers(h/pixel, w/pixel);
         ellers.makeMaze();
         int[][] maze = ellers.getMaze();
 
 
         for(int i=0; i< maze.length; i++){
             for(int j=0; j<maze[0].length; j++){
-                if (maze[i][j] == 1) walls.add(new Wall(new Position(i*28,j*28)));// ADD wall into array
-                if (maze[i][j] == 0) empty.add(new Position(i*28,j*28));            // add empty point to array
+                if (maze[i][j] == 1) walls.add(new Wall(new Position(i*pixel,j*pixel)));// ADD wall into array
+                if (maze[i][j] == 0) empty.add(new Position(i*pixel,j*pixel));            // add empty point to array
             }
         }
         return walls;
@@ -93,12 +93,12 @@ public class GameMechanics implements Tickable {
     }
 
 
-//    public void getStartPositionPawn(){
-//        Collections.shuffle(empty);
-//
-//        for(Pawn pawn: ){
-//            Position pos = (Position) empty.get(Helper.random(0,empty.size()-1));
-//            pawn.setPosition(pos);
+    public void getStartPositionPawn(Pawn pawn){
+        Collections.shuffle(empty);
+
+//        for(Pawn pawn: p){
+            Position pos = (Position) empty.get(Helper.random(0,empty.size()-1));
+            pawn.setPosition(pos);
 //        }
-//    }
+    }
 }

@@ -1,7 +1,8 @@
 package com.game.model;
 
-public enum tileType {
+public enum objectType {
     Pawn,
+    Bomb,
     Wall,
     Wood,
     Grass

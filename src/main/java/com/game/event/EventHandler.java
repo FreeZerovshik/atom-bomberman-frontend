@@ -1,18 +1,12 @@
 package com.game.event;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.game.message.Message;
-import com.game.message.MessageObjects;
-import com.game.message.Topic;
-import com.game.model.Direction;
-import com.game.model.Game;
-import com.game.model.Pawn;
+import com.game.model.*;
 import com.game.network.ConnectionPool;
 import com.game.service.GameRepository;
 import com.game.service.GameSession;
 import com.game.service.MatchMakerService;
 import com.game.service.Replicator;
-import com.game.util.JsonHelper;
 import com.game.util.JsonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +18,6 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -73,18 +65,55 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-//        session.sendMessage(new TextMessage("{ \"history\": [ \"ololo\", \"2\" ] }"));
+
         log.info("Received " + message.getPayload());
+
         JsonNode jsonNode = JsonInterface.getJsonNode(message.getPayload());
+        String topic = jsonNode.findValue("topic").asText();
+        String replica = null;
+
+        switch (topic) {
+            case "MOVE" : replica = playerAction(jsonNode, session); break;
+            case "PLANT_BOMB": replica = bombAction(jsonNode,session);
+            case "JUMP": break;
+            default:  break;
+
+        }
+
+        gameSession.broadcast(replica);
+
+     }
+
+    public String playerAction(JsonNode jsonNode, WebSocketSession session) {
+
         String direction = jsonNode.findValue("direction").asText();
 
-//        synchronized (session) {
-            Pawn pawn = gameSession.getPlayer(session);
-            pawn.move(direction);
-            String replica = replicator.getReplica(gameSession.getPlayers());
-            gameSession.broadcast(replica);
+        Pawn pawn = gameSession.getPlayer(session);
+        pawn.move(direction);
+        return replicator.getReplica(gameSession.getListObjects(null));
+    }
+
+    public String bombAction(JsonNode jsonNode, WebSocketSession session) {
+
+        Position currentPosition = getPosition(session);
+
+        Bomb bomb = new Bomb(objectType.Bomb,currentPosition);
+
+        gameSession.put(session,bomb);
+
+        return replicator.getReplica(gameSession.getListObjects(bomb));
+    }
+
+//    public String fireAction(){
+//        if(gameSession.sizeBombInGame()>0){
+//            Bomb bomb = gameSession.getBomb()
 //        }
-     }
+//    }
+
+    public Position getPosition(WebSocketSession session) {
+        Pawn pawn = gameSession.getPlayer(session);
+        return pawn.getPosition();
+    }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
