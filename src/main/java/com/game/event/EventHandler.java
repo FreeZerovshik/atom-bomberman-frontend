@@ -8,6 +8,7 @@ import com.game.service.GameSession;
 import com.game.service.MatchMakerService;
 import com.game.service.Replicator;
 import com.game.util.JsonInterface;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -80,6 +84,7 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 
         }
 
+        //TODO надо вытаскивать объекты из исх. очереди
         gameSession.broadcast(replica);
 
      }
@@ -99,9 +104,23 @@ public class EventHandler extends TextWebSocketHandler implements WebSocketHandl
 
         Bomb bomb = new Bomb(objectType.Bomb,currentPosition);
 
+        //добавляем бомбу в очередь, пока бомба есть в очереди, значит она есть на экране
         gameSession.put(session,bomb);
 
+        startBomb(bomb);
+
         return replicator.getReplica(gameSession.getListObjects(bomb));
+    }
+
+    public void startBomb(@NotNull Bomb bomb) {
+        TimerTask bombTask = new Bomb(objectType.Fire,bomb.getPosition());
+        // стартуем TimerTask в виде демона
+
+        Timer timer = new Timer(true);
+        System.out.println(">>>> TimerTask начал выполнение");
+        timer.schedule(bombTask,10 * 1000);
+        String json = replicator.getReplica(gameSession.getListObjects(bombTask));
+        gameSession.broadcast(json);
     }
 
 //    public String fireAction(){

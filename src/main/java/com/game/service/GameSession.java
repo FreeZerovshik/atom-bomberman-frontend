@@ -81,8 +81,8 @@ public class GameSession  {
         playersInGame.forEach((k,v)->gameMechanics.getStartPositionPawn(v));
         broadcast(replicator.getReplica(initialObjects));
 
-        Ticker tick = new Ticker();
-        tick.registerTickable(gameMechanics);
+//        Ticker tick = new Ticker();
+//        tick.registerTickable(gameMechanics);
 //        tick.gameLoop();
 
     }
